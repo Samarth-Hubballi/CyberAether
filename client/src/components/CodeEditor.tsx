@@ -1,81 +1,125 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Play, Copy, Sparkles, RotateCcw } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Play, Copy, Sparkles, RotateCcw, Zap, Bug, HelpCircle } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
 
 interface CodeEditorProps {
   initialCode?: string;
-  language?: string;
-  onCodeGenerate?: (prompt: string) => Promise<string>;
+  initialLanguage?: string;
+}
+
+interface CodeGenerationResponse {
+  id: string;
+  generatedCode: string;
+  language: string;
+  prompt: string;
 }
 
 export default function CodeEditor({ 
   initialCode = '', 
-  language = 'javascript',
-  onCodeGenerate 
+  initialLanguage = 'javascript'
 }: CodeEditorProps) {
   const [code, setCode] = useState(initialCode);
   const [prompt, setPrompt] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [language, setLanguage] = useState(initialLanguage);
   const [output, setOutput] = useState('');
 
-  // Mock code examples for demo
-  const mockCodes = [
-    `// AI-Generated React Component
-function UserProfile({ user }) {
-  return (
-    <div className="profile-card">
-      <img src={user.avatar} alt={user.name} />
-      <h2>{user.name}</h2>
-      <p>{user.bio}</p>
-    </div>
-  );
-}`,
-    `// AI-Generated Algorithm
-function quickSort(arr) {
-  if (arr.length <= 1) return arr;
-  
-  const pivot = arr[Math.floor(arr.length / 2)];
-  const left = arr.filter(x => x < pivot);
-  const right = arr.filter(x => x > pivot);
-  
-  return [...quickSort(left), pivot, ...quickSort(right)];
-}`,
-    `// AI-Generated API Handler
-async function handleUserLogin(email, password) {
-  try {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Login failed:', error);
-  }
-}`
+  const languages = [
+    'javascript', 'typescript', 'python', 'java', 'cpp', 'csharp', 
+    'go', 'rust', 'php', 'ruby', 'swift', 'kotlin', 'scala', 'r',
+    'sql', 'html', 'css', 'bash', 'powershell', 'dart', 'lua'
   ];
+
+  // Real AI code generation mutation
+  const generateCodeMutation = useMutation({
+    mutationFn: async ({ prompt, language }: { prompt: string, language: string }) => {
+      const response = await fetch('/api/generate-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, language })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to generate code');
+      }
+      
+      return response.json() as Promise<CodeGenerationResponse>;
+    },
+    onSuccess: (data) => {
+      setCode(data.generatedCode);
+      setOutput(`✨ Code generated successfully in ${data.language}!`);
+      setPrompt('');
+    },
+    onError: (error) => {
+      setOutput(`❌ Error: ${error.message}`);
+    }
+  });
+
+  // Code optimization mutation
+  const optimizeCodeMutation = useMutation({
+    mutationFn: async ({ code, language }: { code: string, language: string }) => {
+      const response = await fetch('/api/optimize-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, language })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to optimize code');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setCode(data.optimizedCode);
+      setOutput('⚡ Code optimized successfully!');
+    },
+    onError: (error) => {
+      setOutput(`❌ Optimization error: ${error.message}`);
+    }
+  });
+
+  // Code explanation mutation
+  const explainCodeMutation = useMutation({
+    mutationFn: async ({ code, language }: { code: string, language: string }) => {
+      const response = await fetch('/api/explain-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, language })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to explain code');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setOutput(`📚 Code Explanation:\n\n${data.explanation}`);
+    },
+    onError: (error) => {
+      setOutput(`❌ Explanation error: ${error.message}`);
+    }
+  });
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
-    
-    setIsGenerating(true);
-    // Simulate AI generation
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const randomCode = mockCodes[Math.floor(Math.random() * mockCodes.length)];
-    setCode(randomCode);
-    setOutput('✨ Code generated successfully!');
-    setIsGenerating(false);
-    setPrompt('');
-    
-    console.log('AI code generation triggered for:', prompt);
+    generateCodeMutation.mutate({ prompt, language });
   };
 
-  const handleRun = () => {
-    setOutput('Code executed successfully! ✅\nNo errors detected.');
-    console.log('Code execution triggered');
+  const handleOptimize = () => {
+    if (!code.trim()) return;
+    optimizeCodeMutation.mutate({ code, language });
+  };
+
+  const handleExplain = () => {
+    if (!code.trim()) return;
+    explainCodeMutation.mutate({ code, language });
   };
 
   const handleCopy = () => {
@@ -91,80 +135,132 @@ async function handleUserLogin(email, password) {
     console.log('Code editor reset');
   };
 
+  const isLoading = generateCodeMutation.isPending || optimizeCodeMutation.isPending || explainCodeMutation.isPending;
+
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-primary" />
-          AI Code Editor
+          AI Code Editor - Multi-Language Support
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* AI Prompt Input */}
-        <div className="flex gap-2">
+        {/* Language Selection & AI Prompt Input */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+          <Select value={language} onValueChange={setLanguage}>
+            <SelectTrigger data-testid="select-language">
+              <SelectValue placeholder="Language" />
+            </SelectTrigger>
+            <SelectContent>
+              {languages.map((lang) => (
+                <SelectItem key={lang} value={lang}>
+                  {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
           <input
             type="text"
             placeholder="Describe what code you want to generate..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            className="flex-1 px-3 py-2 bg-muted border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            className="md:col-span-2 px-3 py-2 bg-muted border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             data-testid="input-ai-prompt"
+            onKeyDown={(e) => e.key === 'Enter' && !isLoading && prompt.trim() && handleGenerate()}
           />
+          
           <Button 
             onClick={handleGenerate} 
-            disabled={isGenerating || !prompt.trim()}
+            disabled={isLoading || !prompt.trim()}
             className="bg-gradient-to-r from-primary to-accent"
             data-testid="button-generate-code"
           >
-            {isGenerating ? (
+            {generateCodeMutation.isPending ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <Sparkles className="h-4 w-4" />
             )}
-            {isGenerating ? 'Generating...' : 'Generate'}
+            {generateCodeMutation.isPending ? 'Generating...' : 'Generate'}
+          </Button>
+        </div>
+
+        {/* AI Actions */}
+        <div className="flex flex-wrap gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleOptimize}
+            disabled={isLoading || !code.trim()}
+            data-testid="button-optimize-code"
+          >
+            {optimizeCodeMutation.isPending ? (
+              <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin mr-2" />
+            ) : (
+              <Zap className="h-3 w-3 mr-2" />
+            )}
+            Optimize
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleExplain}
+            disabled={isLoading || !code.trim()}
+            data-testid="button-explain-code"
+          >
+            {explainCodeMutation.isPending ? (
+              <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin mr-2" />
+            ) : (
+              <HelpCircle className="h-3 w-3 mr-2" />
+            )}
+            Explain
+          </Button>
+          
+          <Button variant="outline" size="sm" onClick={handleCopy} data-testid="button-copy-code">
+            <Copy className="h-3 w-3 mr-2" />
+            Copy
+          </Button>
+          
+          <Button variant="outline" size="sm" onClick={handleReset} data-testid="button-reset-code">
+            <RotateCcw className="h-3 w-3 mr-2" />
+            Reset
           </Button>
         </div>
 
         {/* Code Editor */}
         <div className="relative">
-          <div className="absolute top-2 right-2 flex gap-1 z-10">
-            <Button variant="ghost" size="icon" onClick={handleCopy} data-testid="button-copy-code">
-              <Copy className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleReset} data-testid="button-reset-code">
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleRun} data-testid="button-run-code">
-              <Play className="h-4 w-4" />
-            </Button>
-          </div>
           
           <textarea
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            className="w-full h-64 p-4 pt-12 bg-card border border-border rounded-md font-mono text-sm text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary"
-            placeholder="Start typing your code or use AI generation..."
+            className="w-full h-80 p-4 bg-card border border-border rounded-md font-mono text-sm text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder={`Start typing your ${language} code or use AI generation...`}
             data-testid="textarea-code-editor"
           />
         </div>
 
         {/* Output */}
         {output && (
-          <div className="p-3 bg-muted rounded-md border">
-            <pre className="text-sm text-foreground whitespace-pre-wrap" data-testid="text-code-output">
+          <div className="p-4 bg-muted rounded-md border">
+            <pre className="text-sm text-foreground whitespace-pre-wrap overflow-auto max-h-40" data-testid="text-code-output">
               {output}
             </pre>
           </div>
         )}
 
-        {/* Language Badge */}
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">
-            Language: <span className="text-primary font-mono">{language}</span>
-          </span>
-          <span className="text-xs text-muted-foreground">
-            Lines: {code.split('\n').length}
-          </span>
+        {/* Stats */}
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center gap-4">
+            <span>Language: <span className="text-primary font-mono">{language}</span></span>
+            <span>Lines: {code.split('\n').length}</span>
+            <span>Characters: {code.length}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${isLoading ? 'bg-yellow-500 animate-pulse' : 'bg-green-500'}`} />
+            <span>{isLoading ? 'AI Processing...' : 'Ready'}</span>
+          </div>
         </div>
       </CardContent>
     </Card>

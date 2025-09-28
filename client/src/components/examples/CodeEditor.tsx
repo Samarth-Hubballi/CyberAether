@@ -12,7 +12,7 @@ console.log(greet('Developer'));`;
     <div className="p-8 bg-background">
       <CodeEditor 
         initialCode={initialCode}
-        language="javascript"
+        initialLanguage="javascript"
       />
     </div>
   )

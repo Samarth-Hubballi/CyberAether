@@ -192,7 +192,7 @@ export default function ContactSection() {
                       </div>
                       <div>
                         <div className="font-medium">Email</div>
-                        <div className="text-muted-foreground">alex@neurocoder.dev</div>
+                        <div className="text-muted-foreground">samarthhubli817@gmail.com</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">

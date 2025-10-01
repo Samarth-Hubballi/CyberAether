@@ -135,7 +135,7 @@ export default function CapabilitiesSection() {
             className="bg-gradient-to-r from-primary to-accent hover:shadow-xl hover:shadow-primary/25"
             data-testid="button-explore-capabilities"
           >
-            Explore All Capabilities
+            Integrated with All Capabilities -
             <ArrowRight className="h-5 w-5 ml-2" />
           </Button>
         </div>

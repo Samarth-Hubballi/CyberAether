@@ -25,7 +25,7 @@ export default function HeroSection() {
               <span className="text-primary">AI Coding</span><br />
               <span className="text-foreground">Agent</span><br />
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Revolution
+                Reimagined
               </span>
             </h1>
             
@@ -41,7 +41,7 @@ export default function HeroSection() {
                 data-testid="button-try-agent"
               >
                 <Zap className="h-5 w-5 mr-2" />
-                Try the Agent
+                Agent by Sam
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
               
@@ -49,10 +49,10 @@ export default function HeroSection() {
                 variant="outline" 
                 size="lg" 
                 className="border-primary/50 hover:bg-primary/10"
-                data-testid="button-view-demo"
+                data-testid="button-view"
               >
                 <Code className="h-5 w-5 mr-2" />
-                View Demo
+                Built with AI Assistance
               </Button>
             </div>
             

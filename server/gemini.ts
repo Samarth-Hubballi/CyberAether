@@ -1,9 +1,22 @@
+import dotenv from "dotenv";
+dotenv.config();
 import { GoogleGenAI } from "@google/genai";
 
 // This integration uses Gemini AI for code generation across all programming languages
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+const apiKey = process.env.GEMINI_API_KEY || "";
+console.log("Gemini API Key present:", !!apiKey, apiKey ? "Yes" : "No");
+
+if (!apiKey) {
+  console.error("GEMINI_API_KEY environment variable is not set. Please add it to your .env file.");
+}
+
+const ai = new GoogleGenAI({ apiKey });
 
 export async function generateCode(prompt: string, language: string): Promise<string> {
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not configured. Please add your Google Gemini API key to the .env file as GEMINI_API_KEY=your_api_key_here");
+  }
+
   try {
     const systemPrompt = `You are an expert software engineer with deep knowledge of all programming languages.
 Generate clean, efficient, and well-commented code based on the user's request.
@@ -21,7 +34,7 @@ Respond ONLY with the code, no additional explanation or markdown formatting.`;
     const fullPrompt = `Language: ${language}\n\nRequest: ${prompt}`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash-exp",
       config: {
         systemInstruction: systemPrompt,
       },
@@ -36,6 +49,10 @@ Respond ONLY with the code, no additional explanation or markdown formatting.`;
 }
 
 export async function optimizeCode(code: string, language: string): Promise<string> {
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not configured. Please add your Google Gemini API key to the .env file as GEMINI_API_KEY=your_api_key_here");
+  }
+
   try {
     const systemPrompt = `You are an expert code optimizer. Analyze the provided ${language} code and optimize it for:
 - Performance improvements
@@ -47,7 +64,7 @@ export async function optimizeCode(code: string, language: string): Promise<stri
 Respond ONLY with the optimized code, no additional explanation.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro",
+      model: "gemini-2.0-flash-exp",
       config: {
         systemInstruction: systemPrompt,
       },
@@ -62,6 +79,10 @@ Respond ONLY with the optimized code, no additional explanation.`;
 }
 
 export async function explainCode(code: string, language: string): Promise<string> {
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not configured. Please add your Google Gemini API key to the .env file as GEMINI_API_KEY=your_api_key_here");
+  }
+
   try {
     const systemPrompt = `You are a coding instructor. Explain the provided ${language} code in a clear, educational way.
 Include:
@@ -73,7 +94,7 @@ Include:
 Provide a comprehensive but concise explanation.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash-exp",
       config: {
         systemInstruction: systemPrompt,
       },
@@ -88,6 +109,10 @@ Provide a comprehensive but concise explanation.`;
 }
 
 export async function debugCode(code: string, language: string, errorDescription?: string): Promise<string> {
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not configured. Please add your Google Gemini API key to the .env file as GEMINI_API_KEY=your_api_key_here");
+  }
+
   try {
     const systemPrompt = `You are a debugging expert. Analyze the provided ${language} code and identify potential issues.
 ${errorDescription ? `The user reported this error: ${errorDescription}` : ''}
@@ -101,7 +126,7 @@ Provide:
 Respond with the corrected code followed by explanations.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro", 
+      model: "gemini-2.0-flash-exp", 
       config: {
         systemInstruction: systemPrompt,
       },

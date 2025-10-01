@@ -17,8 +17,8 @@ interface CodeGenerationResponse {
   prompt: string;
 }
 
-export default function CodeEditor({ 
-  initialCode = '', 
+export default function CodeEditor({
+  initialCode = '',
   initialLanguage = 'javascript'
 }: CodeEditorProps) {
   const [code, setCode] = useState(initialCode);
@@ -27,9 +27,9 @@ export default function CodeEditor({
   const [output, setOutput] = useState('');
 
   const languages = [
-    'javascript', 'typescript', 'python', 'java', 'cpp', 'csharp', 
+    'javascript', 'typescript', 'python', 'java', 'cpp', 'csharp',
     'go', 'rust', 'php', 'ruby', 'swift', 'kotlin', 'scala', 'r',
-    'sql', 'html', 'css', 'bash', 'powershell', 'dart', 'lua'
+    'sql', 'html', 'css', 'bash', 'powershell', 'dart', 'lua',"c","c++"
   ];
 
   // Real AI code generation mutation
@@ -40,12 +40,18 @@ export default function CodeEditor({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt, language })
       });
-      
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to generate code');
+        let errorMessage = 'Failed to generate code';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+        } catch {
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
-      
+
       return response.json() as Promise<CodeGenerationResponse>;
     },
     onSuccess: (data) => {
@@ -66,12 +72,18 @@ export default function CodeEditor({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, language })
       });
-      
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to optimize code');
+        let errorMessage = 'Failed to optimize code';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+        } catch {
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
-      
+
       return response.json();
     },
     onSuccess: (data) => {
@@ -91,12 +103,18 @@ export default function CodeEditor({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, language })
       });
-      
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to explain code');
+        let errorMessage = 'Failed to explain code';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+        } catch {
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
-      
+
       return response.json();
     },
     onSuccess: (data) => {
@@ -160,7 +178,7 @@ export default function CodeEditor({
               ))}
             </SelectContent>
           </Select>
-          
+
           <input
             type="text"
             placeholder="Describe what code you want to generate..."
@@ -170,9 +188,9 @@ export default function CodeEditor({
             data-testid="input-ai-prompt"
             onKeyDown={(e) => e.key === 'Enter' && !isLoading && prompt.trim() && handleGenerate()}
           />
-          
-          <Button 
-            onClick={handleGenerate} 
+
+          <Button
+            onClick={handleGenerate}
             disabled={isLoading || !prompt.trim()}
             className="bg-gradient-to-r from-primary to-accent"
             data-testid="button-generate-code"
@@ -188,8 +206,8 @@ export default function CodeEditor({
 
         {/* AI Actions */}
         <div className="flex flex-wrap gap-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={handleOptimize}
             disabled={isLoading || !code.trim()}
@@ -202,9 +220,9 @@ export default function CodeEditor({
             )}
             Optimize
           </Button>
-          
-          <Button 
-            variant="outline" 
+
+          <Button
+            variant="outline"
             size="sm"
             onClick={handleExplain}
             disabled={isLoading || !code.trim()}
@@ -217,12 +235,12 @@ export default function CodeEditor({
             )}
             Explain
           </Button>
-          
+
           <Button variant="outline" size="sm" onClick={handleCopy} data-testid="button-copy-code">
             <Copy className="h-3 w-3 mr-2" />
             Copy
           </Button>
-          
+
           <Button variant="outline" size="sm" onClick={handleReset} data-testid="button-reset-code">
             <RotateCcw className="h-3 w-3 mr-2" />
             Reset
@@ -231,7 +249,7 @@ export default function CodeEditor({
 
         {/* Code Editor */}
         <div className="relative">
-          
+
           <textarea
             value={code}
             onChange={(e) => setCode(e.target.value)}

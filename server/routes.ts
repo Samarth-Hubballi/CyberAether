@@ -140,6 +140,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Status endpoint
+  app.get("/api/status", (req, res) => {
+    res.json({
+      status: "running",
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString()
+    });
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

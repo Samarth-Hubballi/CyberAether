@@ -20,7 +20,7 @@ export default function Home() {
       <footer className="border-t border-primary/20 py-8 bg-card/30">
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground text-sm">
-            © 2024 NeuroCoder. Built with AI-powered precision. 
+            © 2024 CodeX. Built with AI-powered precision. 
             <span className="text-primary font-mono ml-2">NEURAL_STATUS: ACTIVE</span>
           </p>
         </div>

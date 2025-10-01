@@ -20,36 +20,36 @@ export default function AboutSection() {
     { name: "Neural Networks", level: 85, category: "core" },
     { name: "Cloud Architecture", level: 88, category: "technical" },
     { name: "DevOps", level: 82, category: "technical" },
-    { name: "Blockchain", level: 75, category: "technical" },
+    { name: "Software Engineering", level: 75, category: "technical" },
     { name: "Cybersecurity", level: 80, category: "technical" },
     { name: "UI/UX Design", level: 85, category: "design" }
   ];
 
   const achievements = [
-    { title: "AI Research Publications", count: "12+", icon: GraduationCap },
-    { title: "Years of Experience", count: "8+", icon: Briefcase },
-    { title: "Projects Completed", count: "150+", icon: Award },
-    { title: "Open Source Contributions", count: "500+", icon: Github }
+    { title: "AI Agents", count: "5+", icon: GraduationCap },
+    { title: "Years of Experience", count: "2+", icon: Briefcase },
+    { title: "Projects ", count: "15+", icon: Award },
+    { title: "Open Source Contributions", count: "50+", icon: Github }
   ];
 
   const experience = [
     {
-      company: "Neural Systems Inc.",
-      role: "Lead AI Engineer",
-      period: "2022 - Present",
-      description: "Leading development of next-generation AI coding agents and neural network architectures."
+      company: "accenture-At Forage",
+      role: "Software Engineer",
+      period: "October	1st,	2025",
+      description: "Completed Accenture Nordics's Software Engineering Job Simulation  on Forage.."
     },
     {
-      company: "CyberTech Labs",
-      role: "Senior Full Stack Developer",
-      period: "2020 - 2022", 
-      description: "Built scalable cyberpunk-themed applications and AI-powered development tools."
+      company: "Tata -At Forage",
+      role: "Cybersecurity Analyst",
+      period: "May 25th, 2025 ", 
+      description: "Completed a job simulation involving identity and access management (IAM) for Tata Consultancy Services, collaborating with a Cybersecurity Consulting team."
     },
     {
-      company: "Quantum Dynamics",
-      role: "AI Research Scientist",
-      period: "2018 - 2020",
-      description: "Researched advanced machine learning algorithms for code generation and optimization."
+      company: "AWS -At Forage",
+      role: "Solution Architect",
+      period: "Feb 16th 2025",
+      description: "Designed and simple and scalable hosting architecture based on Elastic Beanstalk for a client experiencing significant growth and slow response times.."
     }
   ];
 
@@ -88,12 +88,12 @@ export default function AboutSection() {
                   </div>
                   
                   <div className="text-center sm:text-left flex-1">
-                    <h3 className="text-2xl font-bold mb-2">Alex Chen</h3>
+                    <h3 className="text-2xl font-bold mb-2">Samarth R H</h3>
                     <p className="text-primary font-mono mb-3">Neural Network Engineer</p>
                     <div className="flex items-center justify-center sm:justify-start gap-4 text-sm text-muted-foreground mb-4">
                       <div className="flex items-center gap-1">
                         <MapPin className="h-4 w-4" />
-                        San Francisco, CA
+                        Karnataka,India
                       </div>
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
